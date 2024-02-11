@@ -28,3 +28,6 @@ sudo apt-get install tmux
 git clone https://github.com/jesuskcapellan/dotfiles.git ~/dotfiles
 cd dotfiles
 stow .
+
+# Setup Starship
+curl -sS https://starship.rs/install.sh | bash
