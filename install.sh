@@ -12,6 +12,9 @@ sudo apt-get install git
 echo "Installing Stow..."
 sudo apt-get install stow
 
+# Install tmux
+sudo apt-get install tmux
+
 # Install Neovim
 mkdir ~/.git-clones
 sudo apt-get install ninja-build gettext cmake unzip curl
@@ -21,13 +24,15 @@ git checkout stable
 sudo make install
 cd
 
-# Install tmux
-sudo apt-get install tmux
-
 # Clone dotfiles repo
 git clone https://github.com/jesuskcapellan/dotfiles.git ~/dotfiles
-cd dotfiles
-stow .
+cd dotfiles && stow .
+cd ~ && source ~/.bashrc
+
+# Install Nodejs
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+rebash
+nvm use 18
 
 # Setup Starship
 curl -sS https://starship.rs/install.sh | bash
