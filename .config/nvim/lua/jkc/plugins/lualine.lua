@@ -1,5 +1,3 @@
-local theme = require("jkc.utils").theme
-
 local config = {}
 
 local lualine = {
@@ -7,7 +5,7 @@ local lualine = {
     config = function()
         require("lualine").setup({
             options = {
-                theme = theme,
+                theme = "tokyonight",
             }
         })
     end
