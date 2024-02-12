@@ -13,7 +13,12 @@ echo "Installing Stow..."
 sudo apt-get install stow
 
 # Install tmux
+echo "Installing tmux..."
 sudo apt-get install tmux
+
+# Install fzf
+echo "Installing fzf..."
+sudo apt-get install fzf
 
 # Install Neovim
 mkdir ~/.git-clones
@@ -31,8 +36,7 @@ cd ~ && source ~/.bashrc
 
 # Install Nodejs
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-rebash
-nvm use 18
+source ~/.bashrc && nvm use 18
 
 # Setup Starship
 curl -sS https://starship.rs/install.sh | bash

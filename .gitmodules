@@ -1,0 +1,3 @@
+[submodule "tokyo-night-tmux"]
+	path = tokyo-night-tmux
+	url = https://github.com/janoamaral/tokyo-night-tmux.git
