@@ -5,7 +5,7 @@
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
-      *) return;;
+    *) return;;
 esac
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -47,12 +47,12 @@ esac
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
@@ -65,11 +65,11 @@ unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
+    xterm*|rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
+    *)
+        ;;
 esac
 
 # enable color support of ls and also add handy aliases
@@ -109,11 +109,11 @@ fi
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
 export SECRET_TOKEN=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
@@ -124,9 +124,43 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH="$PATH:$HOME/.local/bin"
 
+if [ -z "$TMUX" ]; then
+    tmux new-session -A -s main
+fi
+
 work(){
     cd ~/$1
     nvim .
+}
+
+icc(){
+    filename=$(basename $1 .c)
+    filetype=""
+    flags="-ansi -Wall -Werror -Wextra -Wpedantic"
+    for arg in $@; do
+        if [ -z "$filetype" ]; then
+            if [ "$arg" = "-asm" ]; then
+                filetype="assembly"
+            elif [ "$arg" = "-obj" ]; then
+                filetype="object"
+            fi
+        fi
+        if [ "$arg" = "-o" ]; then
+            flags="$flags -Og"
+        fi
+    done
+    if [ "$filetype" = "assembly" ]; then
+        gcc $flags -S $1 -o $filename.s
+        nvim $filename.s
+    elif [ "$filetype" = "object" ]; then
+        gcc $flags -c $1 -o $filename.o
+        nvim $filename.o
+    else
+        gcc $flags $1 -o $filename.out -lm
+        if [ $? -eq 0 ]; then
+            ./$filename.out 
+        fi
+    fi
 }
 
 eval "$(starship init bash)"

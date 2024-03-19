@@ -8,17 +8,7 @@ local telescope = {
     config = function()
         require('telescope').setup({
             defaults = {
-                layout_strategy = "horizontal",
-                layout_config = {
-                    width = 0.5,
-                    height = 0.5,
-                },
-                preview = false,
-            },
-            pickers = {
-                find_files = {
-                    theme = "dropdown",
-                },
+                file_ignore_patterns = { "node_modules", ".git" },
             },
         })
         local builtin = require('telescope.builtin')
@@ -30,6 +20,7 @@ local telescope = {
         vim.keymap.set('n', '<leader>ps', function()
             builtin.grep_string({ search = vim.fn.input("Grep > ") })
         end)
+        vim.keymap.set('n', '<leader>pb', builtin.buffers, {})
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
     end
 }

@@ -1,9 +1,5 @@
-local config = {}
-
-local copilot = {
-    "github/copilot.vim"
+return {
+    {
+        "github/copilot.vim",
+    },
 }
-
-table.insert(config, copilot)
-
-return config
