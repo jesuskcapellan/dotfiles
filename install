@@ -32,13 +32,18 @@ cd ~
 
 # Clone dotfiles repo
 git clone https://github.com/jesuskcapellan/dotfiles.git ~/.dotfiles
+cd .dotfiles
 mkdir .config/nvim
 mkdir .config/tmux
 stow --target="$HOME/.config/nvim" nvim
 stow --target="$HOME/.config/tmux" tmux
-stow --target="$HOME/.config" extras/starship
-stow --target="$HOME/.local/bin" extras/tmux-sessionizer
 stow --target="$HOME" bash
+cd extras
+if [ ! -d ~/.local/bin ]; then
+   mkdir ~/.local/bin
+fi
+stow --target="$HOME/.config" starship
+stow --target="$HOME/.local/bin" tmux-sessionizer
 source ~/.bashrc
 
 # Install Node
