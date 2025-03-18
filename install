@@ -32,13 +32,14 @@ cd ~
 
 # Clone dotfiles repo
 git clone https://github.com/jesuskcapellan/dotfiles.git ~/.dotfiles
-cd .dotfiles
-mkdir .config/nvim
-mkdir .config/tmux
+cd ~/.dotfiles
+mkdir ~/.config
+mkdir ~/.config/nvim
+mkdir ~/.config/tmux
 stow --target="$HOME/.config/nvim" nvim
 stow --target="$HOME/.config/tmux" tmux
 stow --target="$HOME" bash
-cd extras
+cd ~/.dotfiles/extras
 if [ ! -d ~/.local/bin ]; then
    mkdir ~/.local/bin
 fi

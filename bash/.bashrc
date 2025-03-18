@@ -124,9 +124,11 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH="$PATH:$HOME/.local/bin"
 
-if [ -z "$TMUX" ]; then
-    tmux new-session -A -s main
-fi
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+export PATH=/home/jesuskc/act/dist/local:$PATH
+
 
 work(){
     cd ~/$1
@@ -163,4 +165,24 @@ icc(){
     fi
 }
 
+export GPG_TTY=$(tty)
+
+alias start="tmux new -s main"
+
+
+# pnpm
+export PNPM_HOME="/home/jesuskc/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+export PATH="$PATH:/usr/local/nvim/bin"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
 eval "$(starship init bash)"
+
