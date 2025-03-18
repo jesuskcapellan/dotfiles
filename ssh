@@ -1,6 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 echo "Generating a new SSH key for GitHub..."
+
+if [ $# -ne 2 ]; then
+   echo Include your email address
+   exit 1
+fi
 
 if [ ! -d !/.ssh ]; then
    mkdir ~/.ssh
