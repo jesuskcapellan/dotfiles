@@ -21,10 +21,10 @@ echo "Installing fzf..."
 sudo apt-get install fzf
 
 # Install Neovim
-mkdir ~/.git-clones
+mkdir ~/programs
 sudo apt-get install ninja-build gettext cmake unzip curl
-git clone https://github.com/neovim/neovim ~/.git-clones/nvim
-cd neovim 
+git clone https://github.com/neovim/neovim ~/programs/nvim
+cd ~/programs/nvim
 make CMAKE_BUILD_TYPE=RelWithDebInfo
 git checkout stable
 sudo make install
@@ -33,9 +33,15 @@ cd ~
 # Clone dotfiles repo
 git clone https://github.com/jesuskcapellan/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-mkdir ~/.config
-mkdir ~/.config/nvim
-mkdir ~/.config/tmux
+if [ ! -d !/.config ]; then
+   mkdir ~/.config
+fi
+if [ ! -d !/.config/nvim ]; then
+   mkdir ~/.config/nvim
+fi
+if [ ! -d !/.config/tmux ]; then
+   mkdir ~/.config/tmux
+fi
 stow --target="$HOME/.config/nvim" nvim
 stow --target="$HOME/.config/tmux" tmux
 stow --target="$HOME" bash
