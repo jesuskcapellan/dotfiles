@@ -133,7 +133,7 @@ stow --target="$HOME/.config/tmux" tmux || error "Failed to stow tmux config"
 
 # Install TPM (Tmux Plugin Manager)
 log "Setting up Tmux Plugin Manager..."
-TPM_DIR="$HOME/.tmux/plugins/tpm"
+TPM_DIR="$HOME/.config/tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR" || error "Failed to clone TPM repository"
     # Initial install of plugins
