@@ -8,7 +8,7 @@ local telescope = {
     config = function()
         require('telescope').setup({
             defaults = {
-                file_ignore_patterns = { "node_modules", ".git" },
+                file_ignore_patterns = { "node_modules", ".git", "__pycache__"},
             },
         })
         local builtin = require('telescope.builtin')

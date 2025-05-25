@@ -8,8 +8,10 @@ return {
             local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
             require("null-ls").setup({
                 sources = {
-                    require("null-ls").builtins.formatting.prettierd,
                     require("null-ls").builtins.formatting.stylua,
+                    require("none-ls.formatting.eslint_d"),
+                    require("none-ls.diagnostics.eslint_d"),
+                    require("none-ls.code_actions.eslint_d")
                 },
                 debug = true,
                 on_attach = function(client, bufnr)

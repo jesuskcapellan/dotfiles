@@ -26,8 +26,8 @@ return {
                 map("n", "<leader>rn", vim.lsp.buf.rename, opts("Smart rename"))                     -- smart rename
                 map("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts("Show buffer diagnostics")) -- show  diagnostics for file
                 map("n", "<leader>d", vim.diagnostic.open_float, opts("Show line diagnostics"))      -- show diagnostics for line
-                map("n", "[d", vim.diagnostic.goto_prev, opts("Go to previous diagnostic"))          -- jump to previous diagnostic in buffer
-                map("n", "]d", vim.diagnostic.goto_next, opts("Go to next diagnostic"))              -- jump to next diagnostic in buffer
+                map("n", "[d", vim.diagnostic.goto_next, opts("Go to previous diagnostic"))          -- jump to previous diagnostic in buffer
+                map("n", "]d", vim.diagnostic.goto_prev, opts("Go to next diagnostic"))              -- jump to next diagnostic in buffer
                 map("n", "K", vim.lsp.buf.hover, opts("Show documentation for what is under cursor")) -- show documentation for what is under cursor
                 map("n", "<leader>rs", ":LspRestart<CR>", opts("Restart LSP"))                       -- mapping to restart lsp if necessary
             end
@@ -71,6 +71,16 @@ return {
             lspconfig["pyright"].setup({
                 capabilities = capabilities,
                 on_attach = on_attach,
+                settings = {
+                    python = {
+                        pythonPath =
+                        "/home/jesus/.cache/pypoetry/virtualenvs/telemetry-cruncher-RK_JH40_-py3.12/bin/python3",
+                        analysis = {
+                            autoImportCompletions = true,
+                            autoSearchPaths = true,
+                        },
+                    },
+                },
             })
 
             -- configure lua server (with special settings)
@@ -95,11 +105,11 @@ return {
             })
             local _border = "single"
 
-            vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+            vim.lsp.handlers["textDocument/hover"] = vim.lsp.buf.hover({
                 border = _border,
             })
 
-            vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+            vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.buf.signature_help({
                 border = _border,
             })
 
