@@ -73,8 +73,6 @@ return {
                 on_attach = on_attach,
                 settings = {
                     python = {
-                        pythonPath =
-                        "/home/jesus/.cache/pypoetry/virtualenvs/telemetry-cruncher-RK_JH40_-py3.12/bin/python3",
                         analysis = {
                             autoImportCompletions = true,
                             autoSearchPaths = true,
