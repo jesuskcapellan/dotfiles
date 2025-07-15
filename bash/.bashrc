@@ -184,5 +184,8 @@ export PATH="$PATH:/usr/local/nvim/bin"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# go
+export PATH=$PATH:/usr/local/go/bin
+
 eval "$(starship init bash)"
 
