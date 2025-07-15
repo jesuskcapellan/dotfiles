@@ -41,44 +41,19 @@ return {
                 vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
             end
 
-            -- configure clangd server
-            lspconfig["clangd"].setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
+            lspconfig["eslint_d"].setup({
+              on_attach = function(_, bufnr)
+                vim.api.nvim_create_autocmd("BufWritePre", {
+                  buffer = bufnr,
+                  command = "EslintFixAll"
+                })
+              end
             })
 
             -- configure typescript server with plugin
             lspconfig["ts_ls"].setup({
                 capabilities = capabilities,
                 on_attach = on_attach,
-            })
-
-            -- configure tailwindcss server
-            lspconfig["tailwindcss"].setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
-            })
-
-            -- configure golang server
-            lspconfig["gopls"].setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
-                cmd = { "gopls" },
-                filetypes = { "go", "gomod", "gowork", "gotmpl" },
-            })
-
-            -- configure python server
-            lspconfig["pyright"].setup({
-                capabilities = capabilities,
-                on_attach = on_attach,
-                settings = {
-                    python = {
-                        analysis = {
-                            autoImportCompletions = true,
-                            autoSearchPaths = true,
-                        },
-                    },
-                },
             })
 
             -- configure lua server (with special settings)
