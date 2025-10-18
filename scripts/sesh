@@ -1,0 +1,164 @@
+#!/usr/bin/env zsh
+# Enhanced tmux session manager
+
+# Check if tmux is available
+if ! command -v tmux >/dev/null 2>&1; then
+    echo "❌ Error: tmux is not installed"
+    exit 1
+fi
+
+# Check if fzf is available
+if ! command -v fzf >/dev/null 2>&1; then
+    echo "❌ Error: fzf is not installed (required for directory selection)"
+    exit 4
+fi
+
+show_help() {
+    echo "Usage: sesh [OPTIONS] [directory]"
+    echo ""
+    echo "Create or switch to tmux sessions based on project directories"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          Show this help message"
+    echo "  -l, --list          List active tmux sessions"
+    echo "  -k, --kill <name>   Kill a specific session"
+    echo "  -K, --kill-all      Kill all tmux sessions"
+    echo ""
+    echo "Examples:"
+    echo "  sesh                    # Interactive directory selection"
+    echo "  sesh ~/my-project       # Create session for specific directory"
+    echo "  sesh --list             # Show active sessions"
+    echo "  sesh --kill my-session  # Kill specific session"
+    echo ""
+    echo "If no directory is provided, you'll get an interactive picker"
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -l|--list)
+            echo "📋 Active tmux sessions:"
+            if tmux list-sessions 2>/dev/null; then
+                echo ""
+                echo "💡 Use 'tmux attach -t <session-name>' to attach"
+                echo "💡 Use 'tmux-sessionizer --kill <session-name>' to kill"
+            else
+                echo "❌ No active tmux sessions"
+            fi
+            exit 0
+            ;;
+        -k|--kill)
+            if [[ -z "$2" ]]; then
+                echo "❌ Error: Please specify a session name to kill"
+                exit 3
+            fi
+            session_name="$2"
+            if tmux has-session -t="$session_name" 2>/dev/null; then
+                tmux kill-session -t="$session_name"
+                echo "✅ Killed session: $session_name"
+            else
+                echo "❌ Session '$session_name' not found"
+                exit 4
+            fi
+            exit 0
+            ;;
+        -K|--kill-all)
+            echo "⚠️ This will kill ALL tmux sessions"
+            read "response?Are you sure? (y/N): "
+            if [[ "$response" =~ ^[Yy]$ ]]; then
+                tmux kill-server
+                echo "✅ All tmux sessions killed"
+            else
+                echo "❌ Cancelled"
+            fi
+            exit 0
+            ;;
+        -*)
+            echo "❌ Unknown option: $1"
+            echo "Use --help for usage information"
+            exit 5
+            ;;
+        *)
+            selected="$1"
+            break
+            ;;
+    esac
+    shift
+done
+
+# If directory provided as argument, use it
+if [[ -n "$selected" ]]; then
+    # Expand tilde and resolve path
+    selected="${selected/#\~/$HOME}"
+    selected=$(realpath "$selected" 2>/dev/null)
+    
+    if [[ ! -d "$selected" ]]; then
+        echo "❌ Error: Directory '$selected' does not exist"
+        exit 6
+    fi
+else
+    # Interactive directory selection
+    echo "🔍 Select a project directory..."
+    
+    # Search in common project locations
+    search_paths=()
+    
+    # Build find command for existing directories
+    find_args=()
+    for path in "${search_paths[@]}"; do
+        if [[ -d "$path" ]]; then
+            find_args+=("$path")
+        fi
+    done
+    
+    if [[ ${#find_args[@]} -eq 0 ]]; then
+        echo "❌ No project directories found in common locations"
+        echo "💡 Try: sesh /path/to/your/project"
+        exit 7
+    fi
+    
+    # Use fzf to select directory (exclude hidden directories)
+    selected=$(find "${find_args[@]}" -mindepth 1 -maxdepth 1 -type d -not -name ".*" | fzf)
+    
+    if [[ -z "$selected" ]]; then
+        echo "❌ No directory selected"
+        exit 0
+    fi
+fi
+
+# Create session name from directory name
+selected_name=$(basename "$selected" | tr . _)
+
+echo "📁 Selected: $selected"
+echo "🏷️  Session name: $selected_name"
+
+# Check if tmux is running
+tmux_running=$(pgrep tmux)
+
+# If not in tmux and no tmux running, create new session and attach
+if [[ -z "$TMUX" ]] && [[ -z "$tmux_running" ]]; then
+    echo "🚀 Creating new tmux session..."
+    tmux new-session -s "$selected_name" -c "$selected"
+    exit 0
+fi
+
+# Create session if it doesn't exist
+if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+    echo "🆕 Creating new session: $selected_name"
+    tmux new-session -ds "$selected_name" -c "$selected"
+else
+    echo "🔄 Switching to existing session: $selected_name"
+fi
+
+# Switch to the session
+if [[ -n "$TMUX" ]]; then
+    # If inside tmux, switch client
+    tmux switch-client -t "$selected_name"
+else
+    # If outside tmux, attach to session
+    tmux attach-session -t "$selected_name"
+fi

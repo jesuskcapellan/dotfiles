@@ -1,12 +1,12 @@
 # Configuration Aliases - Direct file editing
-alias bashit="nvim ~/.bashrc"
+alias zipit="nvim ~/.zshrc"
 alias tmuxit="nvim ~/.config/tmux/tmux.conf"
 alias conkit="nvim ~/.config/nvim"
 alias nameit="nvim ~/.aliases"
-alias shit="nvim ~/scripts/sesh"
+alias shit="nvim ~/.local/bin/sesh"
 alias commit="nvim ~/scripts"
 alias start="tmux new -s main"
-alias rebash="source ~/.bashrc"
+alias zipper="source ~/.zshrc"
 
 # Git Aliases
 alias pull="git fetch && git pull"
@@ -38,9 +38,3 @@ add(){
 back(){
     git reset --soft HEAD~"$1"
 }
-
-# Git Completions
-source /usr/share/bash-completion/completions/git
-__git_complete goto _git_checkout
-
-

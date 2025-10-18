@@ -1,0 +1,63 @@
+#!/bin/zsh
+# Clean up temporary gibby commit
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "❌ Error: Not in a git repository"
+    exit 1
+fi
+
+# Check if there are any commits
+if ! git rev-parse HEAD > /dev/null 2>&1; then
+    echo "❌ Error: No commits found in repository"
+    exit 1
+fi
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+target=${1:-mainline}
+commit=$(git log -1 --pretty=%B 2>/dev/null)
+
+if [ $? -ne 0 ]; then
+    echo "❌ Error: Failed to get commit message"
+    exit 1
+fi
+
+# Check if the latest commit is a TEMP GIBBY commit
+if echo "$commit" | grep -q "TEMP GIBBY"; then
+    echo "🧹 Found TEMP GIBBY commit, cleaning up..."
+    
+    # Use the back script if available, otherwise use git reset directly
+    if command -v back > /dev/null 2>&1; then
+        back 1
+    else
+        git reset --soft HEAD~1
+    fi
+    
+    if [ $? -ne 0 ]; then
+        echo "❌ Failed to reset commit"
+        exit 1
+    fi
+    
+    # Remove the temporary file and unstage it if it exists
+    if [ -f "TEMP_GIBBY" ]; then
+        git restore --staged TEMP_GIBBY 2>/dev/null || git reset HEAD TEMP_GIBBY 2>/dev/null
+        rm TEMP_GIBBY
+        echo "🗑️  Removed TEMP_GIBBY file"
+    fi
+    
+    echo "✅ Guppy succeeded - temporary commit cleaned up!"
+    
+else
+    if [ "$current_branch" = "$target" ]; then
+        echo "You are already on the target branch '$target'. Popping the stash..."
+        if $(git stash list | grep -q "TEMP GIBBY") ; then
+          echo "🧹 Found TEMP GIBBY stash, cleaning up..."
+          git stash pop $(git stash list | grep -q "TEMP GIBBY" | awk -F: '{print $1}')
+        fi
+        exit 0
+    fi
+    echo "❌ Guppy failed"
+    echo "Latest commit is not a TEMP GIBBY commit:"
+    echo "\"$commit\""
+    exit 1
+fi

@@ -122,48 +122,14 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export PATH="$PATH:$HOME/.local/bin"
+export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/scripts:$PATH
 
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 export PATH=/home/jesuskc/act/dist/local:$PATH
 
-
-work(){
-    cd ~/$1
-    nvim .
-}
-
-icc(){
-    filename=$(basename $1 .c)
-    filetype=""
-    flags="-ansi -Wall -Werror -Wextra -Wpedantic"
-    for arg in $@; do
-        if [ -z "$filetype" ]; then
-            if [ "$arg" = "-asm" ]; then
-                filetype="assembly"
-            elif [ "$arg" = "-obj" ]; then
-                filetype="object"
-            fi
-        fi
-        if [ "$arg" = "-o" ]; then
-            flags="$flags -Og"
-        fi
-    done
-    if [ "$filetype" = "assembly" ]; then
-        gcc $flags -S $1 -o $filename.s
-        nvim $filename.s
-    elif [ "$filetype" = "object" ]; then
-        gcc $flags -c $1 -o $filename.o
-        nvim $filename.o
-    else
-        gcc $flags $1 -o $filename.out -lm
-        if [ $? -eq 0 ]; then
-            ./$filename.out 
-        fi
-    fi
-}
 
 export GPG_TTY=$(tty)
 
@@ -185,4 +151,3 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 eval "$(starship init bash)"
-

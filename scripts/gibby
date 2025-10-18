@@ -1,0 +1,101 @@
+#!/bin/zsh
+# Create temporary commit and rebase onto target branch
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "❌ Error: Not in a git repository"
+    exit 1
+fi
+
+# Get current branch
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+target=${1:-mainline}
+
+if [ "$current_branch" = "HEAD" ]; then
+    echo "❌ Error: You are in detached HEAD state"
+    exit 1
+fi
+
+if [ "$current_branch" = "$target" ]; then
+    echo "You are already on the target branch '$target'. Stashing changes..."
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+      git add .
+      git stash -m "TEMP GIBBY"
+    fi
+    git fetch
+    git pull
+    exit 0
+fi
+
+# Check if target branch exists
+if ! git show-ref --verify --quiet refs/heads/"$target" && ! git show-ref --verify --quiet refs/remotes/origin/"$target"; then
+    echo "❌ Error: Target branch '$target' does not exist"
+    exit 1
+fi
+
+echo "🔄 Starting gibby process: rebasing $current_branch with $target"
+
+touch TEMP_GIBBY
+
+# Use the add script if available, otherwise use git commands directly
+if command -v add > /dev/null 2>&1; then
+    add "TEMP GIBBY"
+else
+    git add .
+    git commit -m "TEMP GIBBY"
+fi
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to create temporary commit"
+    rm -f TEMP_GIBBY
+    exit 1
+fi
+
+# Switch to target branch and pull
+if command -v goto > /dev/null 2>&1; then
+    goto "$target"
+else
+    git checkout "$target"
+fi
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to switch to $target branch"
+    exit 1
+fi
+
+if command -v pull > /dev/null 2>&1; then
+    pull
+else
+    git pull
+fi
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to pull latest changes from $target"
+    # Try to go back to original branch
+    git checkout "$current_branch" 2>/dev/null
+    exit 1
+fi
+
+# Switch back to original branch
+if command -v goto > /dev/null 2>&1; then
+    goto "$current_branch"
+else
+    git checkout "$current_branch"
+fi
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to switch back to $current_branch"
+    exit 1
+fi
+
+# Perform rebase
+git rebase "$target"
+
+if [ $? -eq 0 ]; then
+    echo "✅ Gibby completed successfully!"
+    echo "💡 Use 'guppy' to clean up the temporary commit"
+else
+    echo "❌ Rebase failed - you may need to resolve conflicts"
+    echo "💡 Use 'guppy' after resolving conflicts to clean up the temporary commit"
+    exit 1
+fi
