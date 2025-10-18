@@ -21,5 +21,8 @@ return {
         },
       }
     }
+    local set = vim.keymap.set
+    set("n", "<leader>e", "<cmd> NvimTreeToggle <CR>", { desc = "Toggle explorer" })
+    set("n", "<C-n>", "<cmd> NvimTreeFocus <CR>", { desc = "Focus explorer" })
   end,
 }

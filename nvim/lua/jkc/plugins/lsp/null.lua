@@ -13,12 +13,8 @@ return {
         sources = {
           null_ls.builtins.formatting.stylua,
           require("none-ls.formatting.eslint_d"),
-          null_ls.builtins.formatting.prettierd.with({
-            extra_args = { "--config ./prettier.config.js" }
-          }),
           require("none-ls.diagnostics.eslint_d"),
           require("none-ls.code_actions.eslint_d"),
-
         },
         debug = true,
         on_attach = function(_, bufnr)
